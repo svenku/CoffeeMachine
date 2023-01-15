@@ -1,7 +1,7 @@
 from money import Money
 
-class CoffeeMachine():
-    
+
+class CoffeeMachine:
     MENU = {
         "espresso": {
             "ingredients": {
@@ -42,37 +42,47 @@ class CoffeeMachine():
             "unit": "g"
         },
     }
-    
+
     cash_register = Money()
-    
-    
+
     def __init__(self, name):
         self.name = name
-        
+
     def report(self):
         print(self.name + ' ingredients remaining:')
         for k, v in self.resources.items():
             print(f'{k:>6} : {str(v["amount"]):>8}{v["unit"]}')
-        print(f'Cash balance remaining: ${self.money_balance():.2f}')    
-            
-            
-    def money_balance(self):
-        
-        balance = 0
-        for v in self.cash_register.coins.values():
-            balance += v["value"] * v["count"]
-        
-        return balance
-    
+        print(f'Cash balance remaining: ${self.cash_register.value() / 100:.2f}')
 
-        
-                
-    def add_resource(self, resource, amount):
-        
-        self.resources[resource]["amount"] += amount
-        
-    def make_coffee(self, selection):
-        
+    def accept_coins(self, required_amount):
+        print(f'Your selected drink costs: ${required_amount}')
+        print('Please enter appropriate amount of coins.')
+        user_cash = Money()
+
+        while user_cash.value() < required_amount * 100:
+            for k in user_cash.coins.keys():
+                user_cash.coins[k]["count"] += int(input('Enter number of ' + k["name"] + " you are entering: "))
+                print(
+                    f'Entered: ${user_cash.value() / 100:.2f} Remaining: ${required_amount - user_cash.value() / 100:.2f}')
+                if user_cash.value() >= required_amount * 100:
+                    break
+        self.cash_register.add(user_cash)
+
+    def calculate_change(self):
         pass
-    
 
+    # def money_balance(self):
+    #
+    #     balance = 0
+    #     for v in self.cash_register.coins.values():
+    #         balance += v["value"] * v["count"]
+    #
+    #     return balance
+
+    def add_resource(self, resource, amount):
+
+        self.resources[resource]["amount"] += amount
+
+    def make_coffee(self, selection):
+
+        pass
