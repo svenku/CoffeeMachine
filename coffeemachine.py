@@ -61,15 +61,28 @@ class CoffeeMachine:
 
         while user_cash.value() < required_amount * 100:
             for k in user_cash.coins.keys():
-                user_cash.coins[k]["count"] += int(input('Enter number of ' + k["name"] + " you are entering: "))
+                user_cash.coins[k]["count"] += \
+                    int(input(f'Enter number of {user_cash.coins[k]["name"]} ({k} cent coin) you are entering: '))
+
                 print(
                     f'Entered: ${user_cash.value() / 100:.2f} Remaining: ${required_amount - user_cash.value() / 100:.2f}')
                 if user_cash.value() >= required_amount * 100:
                     break
         self.cash_register.add(user_cash)
+        if user_cash.value() >
 
-    def calculate_change(self):
-        pass
+    def get_change(self, amount):
+        change = []
+        for denomination in sorted(self.cash_register.keys(), reverse=True):
+            while denomination <= amount and self.cash_register[denomination]['count'] > 0:
+                amount -= denomination
+                self.cash_register[denomination]['count'] -= 1
+                change.append(denomination)
+
+        if amount != 0:
+            raise Exception("Insufficient coins to give change")
+
+        return change
 
     # def money_balance(self):
     #

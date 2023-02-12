@@ -44,11 +44,11 @@ class Money:
 
     def value(self):
 
-        sum = 0
+        mysum = 0
         for k in self.coins.keys():
-            sum += k * str(k)["count"]
+            mysum += k * self.coins[k]["count"]
 
-        return sum
+        return mysum
 
     def __repr__(self):
 

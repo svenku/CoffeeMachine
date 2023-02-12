@@ -1,12 +1,14 @@
-eur_coins = {100: 20, 50: 20, 20: 0, 10: 0, 5: 2, 2: 15, 1: 1}
+from money import Money
+
+cash = Money()
 
 
-def get_change(amount, coins=eur_coins):
+def get_change(amount, coins=cash.coins):
     change = []
     for denomination in sorted(coins.keys(), reverse=True):
-        while denomination <= amount and coins[denomination] > 0:
+        while denomination <= amount and coins[denomination]['count'] > 0:
             amount -= denomination
-            coins[denomination] -= 1
+            coins[denomination]['count'] -= 1
             change.append(denomination)
 
     if amount != 0:
@@ -14,5 +16,6 @@ def get_change(amount, coins=eur_coins):
 
     return change
 
+
 print(get_change(49))
-print(eur_coins)
+print(cash)
