@@ -54,6 +54,19 @@ class CoffeeMachine:
             print(f'{k:>6} : {str(v["amount"]):>8}{v["unit"]}')
         print(f'Cash balance remaining: ${self.cash_register.value() / 100:.2f}')
 
+    def get_change(self, amount):
+        change = Money()
+        for denomination in sorted(self.cash_register.coins.keys(), reverse=True):
+            while denomination <= amount and self.cash_register.coins[denomination]['count'] > 0:
+                amount -= denomination
+                self.cash_register.coins[denomination]['count'] -= 1
+                change.coins[denomination]['count'] += 1
+
+        if amount != 0:
+            raise Exception("Insufficient coins to give change")
+
+        return change
+
     def accept_coins(self, required_amount):
         print(f'Your selected drink costs: ${required_amount}')
         print('Please enter appropriate amount of coins.')
@@ -64,25 +77,23 @@ class CoffeeMachine:
                 user_cash.coins[k]["count"] += \
                     int(input(f'Enter number of {user_cash.coins[k]["name"]} ({k} cent coin) you are entering: '))
 
-                print(
-                    f'Entered: ${user_cash.value() / 100:.2f} Remaining: ${required_amount - user_cash.value() / 100:.2f}')
-                if user_cash.value() >= required_amount * 100:
+                remaining = required_amount * 100 - user_cash.value()
+
+                if remaining > 0:
+                    print(
+                        f'Entered: ${user_cash.value() / 100:.2f} Remaining: ${remaining / 100:.2f}')
+
+                elif remaining == 0:
+                    self.cash_register.add(user_cash)
                     break
-        self.cash_register.add(user_cash)
-        if user_cash.value() >
 
-    def get_change(self, amount):
-        change = []
-        for denomination in sorted(self.cash_register.keys(), reverse=True):
-            while denomination <= amount and self.cash_register[denomination]['count'] > 0:
-                amount -= denomination
-                self.cash_register[denomination]['count'] -= 1
-                change.append(denomination)
-
-        if amount != 0:
-            raise Exception("Insufficient coins to give change")
-
-        return change
+                else:
+                    print(
+                        f'Entered: ${user_cash.value() / 100:.2f} Returning change: ${-remaining / 100:.2f}')
+                    self.cash_register.add(user_cash)
+                    change_togive = self.get_change(-remaining)
+                    print(f'Returning: {change_togive}')
+                    break
 
     # def money_balance(self):
     #
